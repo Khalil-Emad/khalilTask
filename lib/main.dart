@@ -1,56 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task/domainLayer/cubit/app_cubit.dart';
+import 'core/di/injection.dart' as di;
 
-import 'domainLayer/cubit/cubit/my_cubit_cubit.dart';
+import 'blocObserver.dart';
 import 'presentaionLayer/pages/home.dart';
 
-void main() {
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+void main() async {
   Bloc.observer = const AppBlocObserver();
-  runApp(const MyApp());
+  await di.init();
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (BuildContext _) => di.sl<AppCubit>()..getData(),
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
-
-
-class AppBlocObserver extends BlocObserver {
-  /// {@macro app_bloc_observer}
-  const AppBlocObserver();
-
-  @override
-  void onChange(BlocBase<dynamic> bloc, Change<dynamic> change) {
-    super.onChange(bloc, change);
-    if (bloc is Cubit) print(change);
-  }
-
-  @override
-  void onTransition(
-    Bloc<dynamic, dynamic> bloc,
-    Transition<dynamic, dynamic> transition,
-  ) {
-    super.onTransition(bloc, transition);
-    print(transition);
-  }
-}
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => MyCubitCubit()..getDate(),
-      child: BlocBuilder<MyCubitCubit, MyCubitState>(
-        builder: (context, state) {
-          return MaterialApp(
-            title: 'Flutter Demo',
-            theme: ThemeData(
-              colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-              useMaterial3: true,
-            ),
-            home: Home(),
-          );
-        },
-      ),
+    return BlocBuilder<AppCubit, AppState>(
+      builder: (context, state) {
+        return MaterialApp(
+          title: 'Flutter Demo',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+            useMaterial3: true,
+          ),
+          home:  Home(),
+        );
+      },
     );
   }
 }
