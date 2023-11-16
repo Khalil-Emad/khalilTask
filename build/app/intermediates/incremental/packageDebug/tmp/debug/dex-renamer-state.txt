@@ -1,0 +1,4 @@
+#Thu Nov 16 16:40:36 EET 2023
+base.0=/Users/khalilemad/All Data/khalil/workShop/task/build/app/intermediates/dex/debug/mergeDexDebug/classes.dex
+path.0=classes.dex
+renamed.0=classes.dex
